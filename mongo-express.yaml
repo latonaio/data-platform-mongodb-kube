@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: mongo-express-log
+  name: mongo-express-log
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: mongo-express-log
+  template:
+    metadata:
+      labels:
+        run: mongo-express-log
+    spec:         
+      nodeName: mysql-data
+      containers:
+      - name: mongo-express-log
+        imagePullPolicy: IfNotPresent
+        image: mongo-express:latest
+        ports:
+          - containerPort: 8081
+        env:
+          - name: ME_CONFIG_BASICAUTH_USER_NAME
+            value: XXXXXXXXXX
+          - name: ME_CONFIG_BASICAUTH_PASSWORD
+            value: XXXXXXXXXX
+          - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+            value: XXXXXXXXXX
+          - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+            value: XXXXXXXXXX
+          - name: ME_CONFIG_MONGODB_SERVER
+            value: mongo-log
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: mongo-express-log
+  name: mongo-express-log
+spec:
+  selector:
+    run: mongo-express-log
+  type: NodePort
+  ports:
+    - port: 8081
+      targetPort: 8081
+      nodePort: 32767
+
